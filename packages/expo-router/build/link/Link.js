@@ -4,8 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = void 0;
 exports.Redirect = Redirect;
+exports.Link = Link;
+exports.LinkWithPreview = LinkWithPreview;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 const react_1 = require("react");
@@ -14,9 +15,15 @@ const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
+const HrefPreview_1 = require("./preview/HrefPreview");
+const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
 const useLinkHooks_1 = require("./useLinkHooks");
 const Prefetch_1 = require("../Prefetch");
 const Slot_1 = require("../ui/Slot");
+const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
+const native_1 = require("./preview/native");
+const useScreenPreload_1 = require("./preview/useScreenPreload");
+const url_1 = require("../utils/url");
 /**
  * Redirects to the `href` as soon as the component is mounted.
  *
@@ -42,12 +49,15 @@ const Slot_1 = require("../ui/Slot");
  */
 function Redirect({ href, relativeToDirectory, withAnchor }) {
     const router = (0, hooks_1.useRouter)();
+    const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     (0, useFocusEffect_1.useFocusEffect)(() => {
-        try {
-            router.replace(href, { relativeToDirectory, withAnchor });
-        }
-        catch (error) {
-            console.error(error);
+        if (!isPreview) {
+            try {
+                router.replace(href, { relativeToDirectory, withAnchor });
+            }
+            catch (error) {
+                console.error(error);
+            }
         }
     });
     return null;
@@ -78,11 +88,17 @@ function Redirect({ href, relativeToDirectory, withAnchor }) {
  *}
  * ```
  */
-exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
-exports.Link.resolveHref = href_1.resolveHref;
+function Link(props) {
+    const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
+    if (props.experimentalPreview && !isPreview) {
+        return <LinkWithPreview {...props}/>;
+    }
+    return <ExpoRouterLink {...props}/>;
+}
+Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
-relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, prefetch, ...rest }, ref) {
+relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, prefetch, ...rest }) {
     // Mutate the style prop to add the className on web.
     const style = (0, useLinkHooks_1.useInteropClassName)(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
@@ -115,7 +131,7 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
     };
     const Component = asChild ? Slot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-    const element = (<Component ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
+    const element = (<Component {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {
             onClick: onPress,
         },
@@ -125,5 +141,42 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
       <Prefetch_1.Prefetch href={href}/>
       {element}
     </>) : (element);
+}
+function LinkWithPreview({ experimentalPreview, ...rest }) {
+    const router = (0, hooks_1.useRouter)();
+    const { setIsPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
+    const [previewSize, setPreviewSize] = (0, react_1.useState)(undefined);
+    const { preload, updateNavigationKey, navigationKey } = (0, useScreenPreload_1.useScreenPreload)(rest.href);
+    (0, react_1.useEffect)(() => {
+        if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
+            console.warn('External links previews are not supported');
+        }
+        if (rest.replace) {
+            console.warn('Using replace links with preview is not supported');
+        }
+    }, [rest.href, rest.replace]);
+    if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
+        return <ExpoRouterLink {...rest}/>;
+    }
+    return (<native_1.PeekAndPopView nextScreenId={navigationKey} actions={[]} preferredContentSize={rest.experimentalPreferredPreviewSize} onActionSelected={({ nativeEvent: { id: _ } }) => { }} onWillPreviewOpen={() => {
+            preload();
+            setIsPreviewOpen(true);
+            setIsCurrenPreviewOpen(true);
+            // We need to wait here for the screen to preload. This will happen in the next tick
+            setTimeout(updateNavigationKey);
+        }} onPreviewWillClose={() => { }} onPreviewDidClose={() => {
+            setIsPreviewOpen(false);
+            setIsCurrenPreviewOpen(false);
+        }} onPreviewTapped={() => {
+            router.navigate(rest.href, { __internal__PreviewKey: navigationKey });
+        }}>
+      <native_1.PeekAndPopTriggerView>
+        <ExpoRouterLink {...rest} ref={rest.ref}/>
+      </native_1.PeekAndPopTriggerView>
+      <native_1.PeekAndPopPreviewView onSetSize={({ nativeEvent: size }) => setPreviewSize(size)} style={{ position: 'absolute', ...previewSize }}>
+        {(isCurrentPreviewOpen || rest.experimentalDisableLazyPreview) && (<HrefPreview_1.HrefPreview href={rest.href}/>)}
+      </native_1.PeekAndPopPreviewView>
+    </native_1.PeekAndPopView>);
 }
 //# sourceMappingURL=Link.js.map
