@@ -53,8 +53,8 @@ function isStackAction(action: NavigationAction): action is StackActionType | Ex
   );
 }
 
-const isPeekAndPopAction = (action: NavigationAction): action is ExpoNavigationAction =>
-  !!action.payload && 'peekAndPopKey' in action.payload && !!action.payload.peekAndPopKey;
+const isPreviewAction = (action: NavigationAction): action is ExpoNavigationAction =>
+  !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -140,7 +140,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           }
 
           // START FORK
-          if (isPeekAndPopAction(action)) {
+          if (isPreviewAction(action)) {
             route = state.preloadedRoutes.find(
               (route) => route.name === action.payload.name && id === route.key
             );
@@ -219,7 +219,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // If the routes length is the same as the state routes length, then we are navigating to a new route.
               // Otherwise we are replacing an existing route.
               const key =
-                routes.length === state.routes.length && !isPeekAndPopAction(action)
+                routes.length === state.routes.length && !isPreviewAction(action)
                   ? `${action.payload.name}-${nanoid()}`
                   : route.key;
 

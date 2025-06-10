@@ -19,7 +19,7 @@ function isStackAction(action) {
         action.type === 'POP_TO_TOP' ||
         action.type === 'REPLACE');
 }
-const isPeekAndPopAction = (action) => !!action.payload && 'peekAndPopKey' in action.payload && !!action.payload.peekAndPopKey;
+const isPreviewAction = (action) => !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -85,7 +85,7 @@ const stackRouterOverride = (original) => {
                         }
                     }
                     // START FORK
-                    if (isPeekAndPopAction(action)) {
+                    if (isPreviewAction(action)) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
                     }
                     // END FORK
@@ -153,7 +153,7 @@ const stackRouterOverride = (original) => {
                             }
                             // If the routes length is the same as the state routes length, then we are navigating to a new route.
                             // Otherwise we are replacing an existing route.
-                            const key = routes.length === state.routes.length && !isPeekAndPopAction(action)
+                            const key = routes.length === state.routes.length && !isPreviewAction(action)
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
                             routes.push({
