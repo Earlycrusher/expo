@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 public class PeekAndPopModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("PeekAndPop")
+    Name("ExpoRouterPeekAndPop")
 
     View(PeekAndPopView.self) {
       Prop("nextScreenId") { (view: PeekAndPopView, nextScreenId: String) in

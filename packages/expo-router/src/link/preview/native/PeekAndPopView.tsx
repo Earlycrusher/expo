@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { PeekAndPopViewProps } from './types';
 
 const NativeView: React.ComponentType<PeekAndPopViewProps> = requireNativeView(
-  'PeekAndPop',
+  'ExpoRouterPeekAndPop',
   'PeekAndPopView'
 );
 
