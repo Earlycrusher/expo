@@ -121,8 +121,12 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     willDisplayMenuFor configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionAnimating?
   ) {
+    // This happens when preview starts to become visible. 
+    // It is not yet fully extended at this moment though
+    self.onDidPreviewOpen()
     animator?.addCompletion {
-      self.onDidPreviewOpen()
+      // This happens around a second after the preview is opened and thus gives us no real value
+      // User could have already interacted with preview beforehand
     }
   }
 
