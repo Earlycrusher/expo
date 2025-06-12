@@ -101,6 +101,23 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
 
   func contextMenuInteraction(
     _ interaction: UIContextMenuInteraction,
+    configuration: UIContextMenuConfiguration,
+    highlightPreviewForItemWithIdentifier identifier: any NSCopying
+  ) -> UITargetedPreview? {
+    if let trigger = self.trigger {
+      let target = UIPreviewTarget(container: self, center: trigger.center)
+
+      let parameters = UIPreviewParameters()
+      parameters.backgroundColor = .clear
+      parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: 10)
+
+      return UITargetedPreview(view: trigger, parameters: parameters, target: target)
+    }
+    return nil
+  }
+
+  func contextMenuInteraction(
+    _ interaction: UIContextMenuInteraction,
     willDisplayMenuFor configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionAnimating?
   ) {
