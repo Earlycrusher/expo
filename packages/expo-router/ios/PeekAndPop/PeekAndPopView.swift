@@ -88,6 +88,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     _ interaction: UIContextMenuInteraction,
     configurationForMenuAtLocation location: CGPoint
   ) -> UIContextMenuConfiguration? {
+    onWillPreviewOpen()
     return UIContextMenuConfiguration(
       identifier: nil,
       previewProvider: { [weak self] in
@@ -103,7 +104,6 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     willDisplayMenuFor configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionAnimating?
   ) {
-    onWillPreviewOpen()
     animator?.addCompletion {
       self.onDidPreviewOpen()
     }
