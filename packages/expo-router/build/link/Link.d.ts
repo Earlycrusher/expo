@@ -1,10 +1,15 @@
 import { PropsWithChildren, JSX } from 'react';
 import { Href } from '../types';
+import { LinkMenu, LinkMenuItem, LinkPreview, LinkTrigger } from './LinkWithPreview';
 import { LinkProps, WebAnchorProps } from './useLinkHooks';
 export interface LinkComponent {
     (props: PropsWithChildren<LinkProps>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */
     resolveHref: (href: Href) => string;
+    Menu: typeof LinkMenu;
+    Trigger: typeof LinkTrigger;
+    Preview: typeof LinkPreview;
+    MenuItem: typeof LinkMenuItem;
 }
 /**
  * Component that renders a link using [`href`](#href) to another route.
@@ -35,7 +40,10 @@ export interface LinkComponent {
 export declare function Link(props: LinkProps): JSX.Element;
 export declare namespace Link {
     var resolveHref: (href: Href) => string;
+    var Menu: typeof LinkMenu;
+    var Trigger: typeof LinkTrigger;
+    var Preview: typeof LinkPreview;
+    var MenuItem: typeof LinkMenuItem;
 }
-export declare function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps): JSX.Element;
 export { LinkProps, WebAnchorProps };
 //# sourceMappingURL=Link.d.ts.map

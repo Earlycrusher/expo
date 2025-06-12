@@ -263,34 +263,38 @@ function filterSingular(state, getId) {
 const Stack = Object.assign((props) => {
     const { isPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptions = (0, react_1.useMemo)(() => {
-        const options = props.screenOptions;
-        const animationNone = 'none';
-        if (options) {
-            if (typeof options === 'function') {
-                const newOptions = (...args) => {
-                    const oldResult = options(...args);
-                    return {
-                        ...oldResult,
-                        animation: isPreviewOpen ? animationNone : oldResult.animation,
-                    };
-                };
-                return newOptions;
-            }
-            console.log('isPreviewOpen', isPreviewOpen, 'options', options);
-            return {
-                ...options,
-                animation: isPreviewOpen ? animationNone : options.animation,
-            };
+        if (isPreviewOpen) {
+            return disableAnimationInScreenOptions(props.screenOptions);
         }
-        return {
-            animation: isPreviewOpen ? animationNone : undefined,
-        };
+        return props.screenOptions;
     }, [props.screenOptions, isPreviewOpen]);
     return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,
 });
+function disableAnimationInScreenOptions(options) {
+    const animationNone = 'none';
+    if (options) {
+        if (typeof options === 'function') {
+            const newOptions = (...args) => {
+                const oldResult = options(...args);
+                return {
+                    ...oldResult,
+                    animation: animationNone,
+                };
+            };
+            return newOptions;
+        }
+        return {
+            ...options,
+            animation: animationNone,
+        };
+    }
+    return {
+        animation: animationNone,
+    };
+}
 exports.default = Stack;
 const StackRouter = (options) => {
     const router = (0, native_1.StackRouter)(options);

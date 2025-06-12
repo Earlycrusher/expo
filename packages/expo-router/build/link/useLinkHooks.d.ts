@@ -213,26 +213,6 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * @platform ios
      */
     experimentalPreview?: boolean;
-    /**
-     * Renders the preview at the same time as the link.
-     * If the previewed screen performs heavy operations, it may cause performance issues.
-     *
-     * This has no effect if `experimentalPreview` is not enabled.
-     *
-     * @platform ios
-     */
-    experimentalDisableLazyPreview?: boolean;
-    /**
-     * Sets the preferred size for the preview. The actual size will be computed by the system.
-     *
-     * This has no effect if `experimentalPreview` is not enabled.
-     *
-     * @platform ios
-     */
-    experimentalPreferredPreviewSize?: {
-        width?: number;
-        height?: number;
-    };
     ref?: Ref<Text>;
 }
 export declare function useInteropClassName(props: {

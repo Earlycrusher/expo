@@ -15,6 +15,11 @@ function usePreviewInfo() {
         ...paramsContext,
     };
 }
+/**
+ * Hook to determine if the current route is rendered inside a preview.
+ *
+ *  @returns {boolean} - True if the current route is rendered inside a preview, false otherwise.
+ */
 function useIsPreview() {
     const { isPreview } = usePreviewInfo();
     return isPreview;

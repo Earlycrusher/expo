@@ -354,28 +354,10 @@ const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isPreviewOpen } = useLinkPreviewContext();
     const screenOptions = useMemo(() => {
-      const options = props.screenOptions;
-      const animationNone: StackAnimationTypes = 'none';
-      if (options) {
-        if (typeof options === 'function') {
-          const newOptions: typeof options = (...args) => {
-            const oldResult = options(...args);
-            return {
-              ...oldResult,
-              animation: isPreviewOpen ? animationNone : oldResult.animation,
-            };
-          };
-          return newOptions;
-        }
-        console.log('isPreviewOpen', isPreviewOpen, 'options', options);
-        return {
-          ...options,
-          animation: isPreviewOpen ? animationNone : options.animation,
-        };
+      if (isPreviewOpen) {
+        return disableAnimationInScreenOptions(props.screenOptions);
       }
-      return {
-        animation: isPreviewOpen ? animationNone : undefined,
-      };
+      return props.screenOptions;
     }, [props.screenOptions, isPreviewOpen]);
     return (
       <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
@@ -388,6 +370,31 @@ const Stack = Object.assign(
     Protected,
   }
 );
+
+function disableAnimationInScreenOptions(
+  options: ComponentProps<typeof RNStack>['screenOptions'] | undefined
+): ComponentProps<typeof RNStack>['screenOptions'] {
+  const animationNone: StackAnimationTypes = 'none';
+  if (options) {
+    if (typeof options === 'function') {
+      const newOptions: typeof options = (...args) => {
+        const oldResult = options(...args);
+        return {
+          ...oldResult,
+          animation: animationNone,
+        };
+      };
+      return newOptions;
+    }
+    return {
+      ...options,
+      animation: animationNone,
+    };
+  }
+  return {
+    animation: animationNone,
+  };
+}
 
 export default Stack;
 

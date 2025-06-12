@@ -1,3 +1,4 @@
-export { default as PeekAndPopView } from './PeekAndPopView';
-export { default as PeekAndPopPreviewView } from './PeekAndPopPreviewView';
-export { default as PeekAndPopTriggerView } from './PeekAndPopTriggerView';
+export { default as LinkPreviewNativeView } from './LinkPreviewNativeView';
+export { default as LinkPreviewNativePreviewView } from './LinkPreviewNativePreviewView';
+export { default as LinkPreviewNativeTriggerView } from './LinkPreviewNativeTriggerView';
+export { default as LinkPreviewNativeActionView } from './LinkPreviewNativeActionView';

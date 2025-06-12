@@ -67,7 +67,6 @@ export function useNavigation<
     getState(): NavigationState | undefined;
   },
 >(parent?: string | Href): T {
-  // TODO: Show warning in preview. Something like `navigation.${String(prop)} should not be used in a previewed screen. To fix this issue, wrap navigation calls with 'if (!isPreview) { ... }'.`
   let navigation = useUpstreamNavigation<any>();
   let state = useStateForPath();
 

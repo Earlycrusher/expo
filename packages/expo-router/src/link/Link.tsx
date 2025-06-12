@@ -1,27 +1,30 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { PropsWithChildren, useMemo, MouseEvent, JSX, useEffect, useState } from 'react';
-import { Text, GestureResponderEvent, Platform } from 'react-native';
+import Constants from 'expo-constants';
+import { PropsWithChildren, JSX, Children, isValidElement } from 'react';
 
 import { resolveHref } from './href';
-import useLinkToPathProps from './useLinkToPathProps';
-import { useRouter } from '../hooks';
 import { Href } from '../types';
-import { HrefPreview } from './preview/HrefPreview';
-import { useLinkPreviewContext } from './preview/LinkPreviewContext';
-import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
-import { Prefetch } from '../Prefetch';
-import { Slot } from '../ui/Slot';
+import { BaseExpoRouterLink } from './BaseExpoRouterLink';
+import {
+  LinkMenu,
+  LinkMenuItem,
+  LinkPreview,
+  LinkTrigger,
+  LinkWithPreview,
+} from './LinkWithPreview';
 import { useIsPreview } from './preview/PreviewRouteContext';
-import { PeekAndPopPreviewView, PeekAndPopTriggerView, PeekAndPopView } from './preview/native';
-import { useScreenPreload } from './preview/useScreenPreload';
-import { shouldLinkExternally } from '../utils/url';
+import { LinkProps, WebAnchorProps } from './useLinkHooks';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
   /** Helper method to resolve an Href object into a string. */
   resolveHref: (href: Href) => string;
+  Menu: typeof LinkMenu;
+  Trigger: typeof LinkTrigger;
+  Preview: typeof LinkPreview;
+  MenuItem: typeof LinkMenuItem;
 }
 
 /**
@@ -52,147 +55,25 @@ export interface LinkComponent {
  */
 export function Link(props: LinkProps) {
   const isPreview = useIsPreview();
-  if (props.experimentalPreview && !isPreview) {
+  if (isLinkWithPreview(props) && !isPreview && Constants?.expoConfig?.newArchEnabled !== false) {
     return <LinkWithPreview {...props} />;
   }
-  return <ExpoRouterLink {...props} />;
+  return <BaseExpoRouterLink {...props} />;
+}
+
+function isLinkWithPreview(props: LinkProps): boolean {
+  return (
+    props.experimentalPreview ||
+    Children.toArray(props.children).some(
+      (child) => isValidElement(child) && child.type === LinkPreview
+    )
+  );
 }
 
 Link.resolveHref = resolveHref;
-
-function ExpoRouterLink({
-  href,
-  replace,
-  push,
-  dismissTo,
-  // TODO: This does not prevent default on the anchor tag.
-  relativeToDirectory,
-  asChild,
-  rel,
-  target,
-  download,
-  withAnchor,
-  dangerouslySingular: singular,
-  prefetch,
-  ...rest
-}: LinkProps) {
-  // Mutate the style prop to add the className on web.
-  const style = useInteropClassName(rest);
-
-  // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
-  const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
-
-  const resolvedHref = useMemo(() => {
-    if (href == null) {
-      throw new Error('Link: href is required');
-    }
-    return resolveHref(href);
-  }, [href]);
-
-  let event;
-  if (push) event = 'PUSH';
-  if (replace) event = 'REPLACE';
-  if (dismissTo) event = 'POP_TO';
-
-  const props = useLinkToPathProps({
-    href: resolvedHref,
-    event,
-    relativeToDirectory,
-    withAnchor,
-    dangerouslySingular: singular,
-  });
-
-  const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
-    if ('onPress' in rest) {
-      rest.onPress?.(e);
-    }
-    props.onPress(e);
-  };
-
-  const Component = asChild ? Slot : Text;
-
-  // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-  const element = (
-    <Component
-      {...props}
-      {...hrefAttrs}
-      {...rest}
-      style={style}
-      {...Platform.select({
-        web: {
-          onClick: onPress,
-        } as any,
-        default: { onPress },
-      })}
-    />
-  );
-
-  return prefetch ? (
-    <>
-      <Prefetch href={href} />
-      {element}
-    </>
-  ) : (
-    element
-  );
-}
-
-export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
-  const router = useRouter();
-  const { setIsPreviewOpen } = useLinkPreviewContext();
-  const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
-  const [previewSize, setPreviewSize] = useState<{ width: number; height: number } | undefined>(
-    undefined
-  );
-
-  const { preload, updateNavigationKey, navigationKey } = useScreenPreload(rest.href);
-
-  useEffect(() => {
-    if (shouldLinkExternally(String(rest.href))) {
-      console.warn('External links previews are not supported');
-    }
-    if (rest.replace) {
-      console.warn('Using replace links with preview is not supported');
-    }
-  }, [rest.href, rest.replace]);
-
-  if (shouldLinkExternally(String(rest.href)) || rest.replace) {
-    return <ExpoRouterLink {...rest} />;
-  }
-
-  return (
-    <PeekAndPopView
-      nextScreenId={navigationKey}
-      actions={[]}
-      preferredContentSize={rest.experimentalPreferredPreviewSize}
-      onActionSelected={({ nativeEvent: { id: _ } }) => {}}
-      onWillPreviewOpen={() => {
-        preload();
-        setIsPreviewOpen(true);
-        setIsCurrenPreviewOpen(true);
-        // We need to wait here for the screen to preload. This will happen in the next tick
-        setTimeout(updateNavigationKey);
-      }}
-      onPreviewWillClose={() => {}}
-      onPreviewDidClose={() => {
-        setIsPreviewOpen(false);
-        setIsCurrenPreviewOpen(false);
-      }}
-      onPreviewTapped={() => {
-        router.navigate(rest.href, { __internal__PreviewKey: navigationKey });
-      }}>
-      <PeekAndPopTriggerView>
-        <ExpoRouterLink {...rest} ref={rest.ref} />
-      </PeekAndPopTriggerView>
-      <PeekAndPopPreviewView
-        onSetSize={({ nativeEvent: size }) => setPreviewSize(size)}
-        style={{ position: 'absolute', ...previewSize }}>
-        {(isCurrentPreviewOpen || rest.experimentalDisableLazyPreview) && (
-          <HrefPreview href={rest.href} />
-        )}
-      </PeekAndPopPreviewView>
-    </PeekAndPopView>
-  );
-}
+Link.Menu = LinkMenu;
+Link.Trigger = LinkTrigger;
+Link.Preview = LinkPreview;
+Link.MenuItem = LinkMenuItem;
 
 export { LinkProps, WebAnchorProps };

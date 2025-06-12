@@ -23,6 +23,11 @@ export function usePreviewInfo(): UsePreviewInfo {
   };
 }
 
+/**
+ * Hook to determine if the current route is rendered inside a preview.
+ *
+ *  @returns {boolean} - True if the current route is rendered inside a preview, false otherwise.
+ */
 export function useIsPreview(): boolean {
   const { isPreview } = usePreviewInfo();
   return isPreview;

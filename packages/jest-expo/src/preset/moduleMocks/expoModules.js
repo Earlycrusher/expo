@@ -1432,7 +1432,7 @@ module.exports = {
         ExpoLivePhoto: {
           propNames: ['contentFit', 'isMuted', 'source', 'useDefaultGestureRecognizer'],
         },
-        ExpoRouterPeekAndPop: {
+        ExpoRouterLinkPreviewNative: {
           propNames: ['nextScreenId', 'actions', 'preferredContentSize'],
         },
         ExponentGLView: { propNames: ['enableExperimentalWorkletSupport', 'msaaSamples'] },

@@ -1,9 +1,10 @@
 import { Text } from 'react-native';
 
 import {
-  PeekAndPopPreviewViewProps,
-  PeekAndPopTriggerViewProps,
-  PeekAndPopViewProps,
+  LinkPreviewNativePreviewViewProps,
+  LinkPreviewNativeTriggerViewProps,
+  LinkPreviewNativeViewProps,
+  type LinkPreviewNativeActionViewProps,
 } from './types';
 
 const NotAvailableOnThisPlatformComponent = () => {
@@ -11,8 +12,10 @@ const NotAvailableOnThisPlatformComponent = () => {
   return <Text style={{ color: 'red' }}>Peek and pop preview is only available on iOS</Text>;
 };
 
-export const PeekAndPopView = (_: PeekAndPopViewProps) => NotAvailableOnThisPlatformComponent();
-export const PeekAndPopPreviewView = (_: PeekAndPopPreviewViewProps) =>
+export const LinkPreviewNativeView = (_: LinkPreviewNativeViewProps) => NotAvailableOnThisPlatformComponent();
+export const LinkPreviewNativePreviewView = (_: LinkPreviewNativePreviewViewProps) =>
   NotAvailableOnThisPlatformComponent();
-export const PeekAndPopTriggerView = (_: PeekAndPopTriggerViewProps) =>
+export const LinkPreviewNativeTriggerView = (_: LinkPreviewNativeTriggerViewProps) =>
+  NotAvailableOnThisPlatformComponent();
+export const LinkPreviewNativeActionView = (_: LinkPreviewNativeActionViewProps) =>
   NotAvailableOnThisPlatformComponent();

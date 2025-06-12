@@ -15,13 +15,12 @@ import { Href } from '../../types';
 
 export function useScreenPreload(href: Href) {
   const router = useRouter();
-  const [navigationKey, setNavigationKey] = useState<string | undefined>();
+  const [nextScreenId, setNextScreenId] = useState<string | undefined>();
   const store = useExpoRouterStore();
 
   const { params, routeNode } = useMemo(() => getParamsAndNodeFromHref(href), [href]);
 
-  // TODO: check if this can be done with listener to navigation state
-  const updateNavigationKey = useCallback((): void => {
+  const updateNextScreenId = useCallback((): void => {
     const rootState = store.state;
     const allPreloadedRoutes = rootState ? getAllPreloadedRoutes(rootState) : [];
 
@@ -33,7 +32,7 @@ export function useScreenPreload(href: Href) {
       return r.name === routeNode?.route && isEqual(r.params, params);
     })?.key;
 
-    setNavigationKey(routeKey);
+    setNextScreenId(routeKey);
   }, [params, routeNode]);
   const preload = useCallback(() => {
     router.prefetch(href);
@@ -41,8 +40,8 @@ export function useScreenPreload(href: Href) {
 
   return {
     preload,
-    updateNavigationKey,
-    navigationKey,
+    updateNextScreenId,
+    nextScreenId,
   };
 }
 

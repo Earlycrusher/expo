@@ -1,24 +1,18 @@
 import { ViewProps } from 'react-native';
-export interface PeekAndPopPreviewViewProps extends ViewProps {
-    onSetSize?: (event: {
-        nativeEvent: {
-            width: number;
-            height: number;
-        };
-    }) => void;
-}
-export interface PeekAndPopTriggerViewProps extends ViewProps {
-}
-export interface PeekAndPopViewProps extends ViewProps {
-    nextScreenId: string | undefined;
-    actions: {
-        title: string;
-        id: string;
-    }[];
+export interface LinkPreviewNativePreviewViewProps extends ViewProps {
     preferredContentSize?: {
-        width?: number;
-        height?: number;
-    } | undefined;
+        width: number;
+        height: number;
+    };
+}
+export interface LinkPreviewNativeTriggerViewProps extends ViewProps {
+}
+export interface LinkPreviewNativeActionViewProps {
+    title: string;
+    id: string;
+}
+export interface LinkPreviewNativeViewProps extends ViewProps {
+    nextScreenId: string | undefined;
     onActionSelected?: (event: {
         nativeEvent: {
             id: string;

@@ -1,17 +1,18 @@
-import { usePathname } from 'expo-router';
+import { useIsPreview, usePathname } from 'expo-router';
 import React from 'react';
 import { View, Text } from 'react-native';
-
-import { Links } from '@/__e2e__/link-preview/components/Links';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const HomeOne = () => {
   const pathname = usePathname();
+  const isPreview = useIsPreview();
+  const { top } = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: '#fff', paddingTop: top }}>
       <Text>Home - One</Text>
       <Text>Current Path: {pathname}</Text>
-      <Links />
+      <Text>Is preview: {isPreview ? 'Yes' : 'No'}</Text>
     </View>
   );
 };

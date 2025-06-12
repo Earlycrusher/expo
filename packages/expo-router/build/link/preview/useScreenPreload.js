@@ -11,11 +11,10 @@ const storeContext_1 = require("../../global-state/storeContext");
 const hooks_1 = require("../../hooks");
 function useScreenPreload(href) {
     const router = (0, hooks_1.useRouter)();
-    const [navigationKey, setNavigationKey] = (0, react_1.useState)();
+    const [nextScreenId, setNextScreenId] = (0, react_1.useState)();
     const store = (0, storeContext_1.useExpoRouterStore)();
     const { params, routeNode } = (0, react_1.useMemo)(() => (0, HrefPreview_1.getParamsAndNodeFromHref)(href), [href]);
-    // TODO: check if this can be done with listener to navigation state
-    const updateNavigationKey = (0, react_1.useCallback)(() => {
+    const updateNextScreenId = (0, react_1.useCallback)(() => {
         const rootState = store.state;
         const allPreloadedRoutes = rootState ? getAllPreloadedRoutes(rootState) : [];
         const routeKey = allPreloadedRoutes.find((r) => {
@@ -25,15 +24,15 @@ function useScreenPreload(href) {
             }
             return r.name === routeNode?.route && (0, fast_deep_equal_1.default)(r.params, params);
         })?.key;
-        setNavigationKey(routeKey);
+        setNextScreenId(routeKey);
     }, [params, routeNode]);
     const preload = (0, react_1.useCallback)(() => {
         router.prefetch(href);
     }, [href]);
     return {
         preload,
-        updateNavigationKey,
-        navigationKey,
+        updateNextScreenId,
+        nextScreenId,
     };
 }
 function getAllPreloadedRoutes(state) {
