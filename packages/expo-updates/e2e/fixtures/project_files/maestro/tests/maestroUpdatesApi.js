@@ -25,10 +25,17 @@ function delay(ms) {
   http.get(`${serverBaseUrl}/delay?ms=${ms}`);
 }
 
+function staticFileCount() {
+  var requestString = `${serverBaseUrl}/static-file-count`;
+  const response = http.get(requestString);
+  return JSON.parse(response.body).count;
+}
+
 output.api = {
   delay: delay,
   lastRequestHeaders: lastRequestHeaders,
   restartUpdatesServer: restartUpdatesServer,
   serveManifest: serveManifest,
+  staticFileCount: staticFileCount,
   stopUpdatesServer: stopUpdatesServer,
 };

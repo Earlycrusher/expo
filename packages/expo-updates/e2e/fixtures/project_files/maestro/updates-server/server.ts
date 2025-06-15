@@ -339,6 +339,13 @@ async function stopServer() {
   Server.stop();
 }
 
+app.get('/static-file-count', (_: Request, res: Response) => {
+  console.log('Received request for static file count');
+  res.status(200).send({
+    count: getRequestedStaticFilesLength(),
+  });
+});
+
 app.get('/delay', async (req: Request, res: Response) => {
   console.log('Received request to delay: ', req.query.ms);
   if (!req.query.ms) {

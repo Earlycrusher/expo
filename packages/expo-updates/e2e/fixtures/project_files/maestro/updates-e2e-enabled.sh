@@ -48,3 +48,7 @@ beforeTest
 maestro test maestro/tests/reload.yml
 beforeTest
 maestro test maestro/tests/runUpdate.yml
+beforeTest
+maestro test maestro/tests/runUpdateWithInvalidHash.yml
+beforeTest
+maestro test maestro/tests/runUpdateWithInvalidAssetHash.yml
