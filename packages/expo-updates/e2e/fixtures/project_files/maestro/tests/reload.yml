@@ -7,18 +7,18 @@ onFlowStart:
 ---
 - launchApp
 - assertVisible:
-    label: Ensure app is visible
-    text: test
+    label: Assert embedded update is visible
+    text: "maestroString test"
 - tapOn: "reload"
 - evalScript:
     script: ${output.api.delay(2000)}
     label: Delay for 2 seconds
 - assertVisible:
-    label: Ensure app is visible after reload
-    text: test
+    label: Assert embedded update is visible
+    text: "maestroString test"
 - stopApp
 - launchApp
 - assertVisible:
-    label: Ensure app is visible after stop and launch
-    text: test
+    label: Assert app is visible after stop and launch
+    text: "maestroString test"
 - stopApp

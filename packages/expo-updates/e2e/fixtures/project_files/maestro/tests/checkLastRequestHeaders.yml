@@ -7,8 +7,8 @@ onFlowStart:
 ---
 - launchApp
 - assertVisible:
-    label: Check that app is visible
-    text: test
+    label: Assert embedded update is visible
+    text: "maestroString test"
 - assertTrue:
     condition:  ${output.api.lastRequestHeaders().host == 'localhost:4747'}
     label: Check that request contains correct headers

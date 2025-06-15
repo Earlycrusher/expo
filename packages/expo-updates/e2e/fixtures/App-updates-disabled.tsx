@@ -65,6 +65,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <TestValue testID="updateString" value="test" />
+      <TestValue testID="maestroString" value="maestroString test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />

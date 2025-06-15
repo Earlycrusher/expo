@@ -13,7 +13,7 @@ onFlowStart:
 - launchApp
 - assertVisible:
     label: Assert embedded update is visible
-    text: test
+    text: "maestroString test"
 - evalScript:
     script: ${output.api.delay(3000)}
     label: Delay for 3 seconds
@@ -21,5 +21,5 @@ onFlowStart:
 - launchApp
 - assertVisible:
     label: Assert downloaded update is visible
-    text: test-update-1
+    text: "maestroString test-update-1"
 - stopApp

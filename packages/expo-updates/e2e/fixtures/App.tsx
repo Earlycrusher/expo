@@ -191,6 +191,7 @@ export default function App() {
         value={`${didCheckAndDownloadHappenInParallel}`}
       />
       <TestValue testID="updateString" value="test" />
+      <TestValue testID="maestroString" value="maestroString test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />

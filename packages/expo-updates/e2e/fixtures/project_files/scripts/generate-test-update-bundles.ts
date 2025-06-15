@@ -48,10 +48,12 @@ async function createTestUpdateBundles(
   const testUpdateJson: { [k: string]: any } = {};
   for (const notifyString of ['test', ...notifyStrings]) {
     console.log(`Creating bundle for string '${notifyString}'...`);
-    let modifiedAppJs = originalAppJs.replace(
-      /testID="updateString" value="test"/g,
-      `testID="updateString" value="${notifyString}"`
-    );
+    let modifiedAppJs = originalAppJs
+      .replace(
+        /testID="updateString" value="test"/g,
+        `testID="updateString" value="${notifyString}"`
+      )
+      .replace(/value="maestroString test"/g, `value="maestroString ${notifyString}"`);
 
     if (notifyString === 'test-update-crashing') {
       modifiedAppJs = modifiedAppJs.replace('// REPLACE_WITH_CRASHING_CODE', 'blah.blah;');
